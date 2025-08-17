@@ -1,0 +1,214 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    /* Cor de fundo suave */
+    font-size: 0.9rem;
+    /* Fonte menor, para um estilo mais "sistemático" */
+}
+
+.navbar {
+    width: 100%;
+    background: linear-gradient(to top, #42946e, #2a704f);
+    font-size: 1rem;
+    /* Ajustando o tamanho da fonte da navbar */
+}
+
+.navbar .nav-item {
+    margin-right: 15px;
+    /* Reduzindo o espaçamento entre os itens */
+}
+
+.navbar .nav-link {
+    color: white;
+    font-size: 0.9rem;
+    /* Diminuindo o tamanho da fonte */
+}
+
+.navbar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+    /* Mantendo o tamanho do texto consistente */
+}
+
+.navbar .dropdown-menu {
+    min-width: 180px;
+    /* Menu dropdown mais compacto */
+    font-size: 0.9rem;
+    /* Reduzindo o tamanho da fonte do menu */
+}
+
+.user-info img {
+    border-radius: 50%;
+    width: 25px;
+    /* Ícone do usuário menor */
+    height: 25px;
+    /* Mantendo o ícone proporcional */
+    margin-right: 10px;
+}
+
+.container {
+    max-width: 1200px;
+    /* Ajustando o tamanho máximo da tela */
+    margin-top: 20px;
+    /* Espaço superior maior */
+}
+
+.table {
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.3);
+    /* Fonte menor na tabela */
+}
+
+.table th,
+.table td {
+    padding: 8px 12px;
+    /* Menos espaço nas células */
+}
+
+.btn {
+    font-size: 0.85rem;
+    /* Botões com fonte menor */
+}
+
+.footer {
+    font-size: 0.75rem;
+    /* Texto do rodapé reduzido */
+    background-color: #fff;
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+    color: #555;
+}
+
+footer .container .copyright {
+    text-align: center;
+}
+
+footer a {
+    color: #5a5a5a;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: #3c3c3c;
+}
+
+
+
+/* Estilo Global para o Formulário */
+body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    /* Fonte menor para parecer mais com um sistema */
+    line-height: 1.5;
+}
+
+
+/* Ajuste para Labels */
+label.form-label {
+    font-weight: bold;
+    font-size: 11px;
+    /* Reduz o tamanho do texto dos labels */
+    margin-bottom: 5px;
+}
+
+/* Ajuste para Inputs */
+input.form-control {
+    font-size: 14px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    /* Garante que o input ocupe toda a largura disponível */
+    margin-bottom: 15px;
+}
+
+
+
+/* Estilo para o botão */
+button.btn {
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+
+/* Ajuste para a caixa de entrada de data */
+input[type="date"] {
+    font-size: 14px;
+}
+
+/* Redução do tamanho da caixa de texto para telefone */
+input[type="text"] {
+    font-size: 14px;
+    padding: 8px;
+}
+
+#foto-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    /* Tamanho fixo */
+    height: 100px;
+    overflow: hidden;
+    position: relative;
+    background-color: #f4f4f4;
+}
+
+#preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Estiliza o botão "X" */
+.remove-preview {
+    position: absolute;
+    background-color: red;
+    top: 0px !important;
+    right: 0px !important;
+    color: white !important;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-size: 11px !important;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+/* Garante que o botão apareça corretamente */
+#foto-preview .remove-preview {
+    display: flex;
+}
+html, body {
+height: 100%;
+margin: 0;
+}
+
+body {
+display: flex;
+flex-direction: column;
+min-height: 100vh;
+}
+
+#content-wrapper {
+flex: 1;
+display: flex;
+flex-direction: column;
+}
+
+#content {
+flex: 1;
+}
+
+.sticky-footer {
+margin-top: auto;
+}

@@ -1,0 +1,61 @@
+#preload {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: rotate 1s linear infinite;
+}
+#preload .loader {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 8px solid #3498db;
+    border-top: 8px solid transparent;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+#qrcode-img {
+    display: none;
+    max-width: 300px;
+    margin-top: 20px;
+}
+@keyframes rotate {
+    100% { transform: rotate(360deg); }
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.qr-code{
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.server_connect{
+    background: #00ff51;
+}
+
+.imagem-round {
+    width: 50px; /* Defina a largura desejada para o círculo */
+    height: 50px; /* Defina a altura desejada para o círculo (normalmente igual à largura para obter um círculo perfeito) */
+    border-radius: 50%; /* Define o raio para 50% para criar um círculo */
+    overflow: hidden; /* Esconde qualquer conteúdo adicional que possa sair do círculo */
+  }
+  
+  .imagem-round img {
+    width: 100%; /* Garante que a imagem preencha todo o círculo */
+    height: 100%; /* Garante que a imagem preencha todo o círculo */
+    object-fit: cover; /* Faz com que a imagem cubra todo o espaço do círculo, preservando a proporção */
+  }
