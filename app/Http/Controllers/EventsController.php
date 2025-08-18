@@ -280,10 +280,17 @@ class EventsController extends Controller
 
     public function cronEventHandler()
     {
-        // Função para executar no cron e receber mudanças de eventos
-        // Esta função pode ser chamada periodicamente para processar eventos em fila
-        
+        // Pegar dados da Evolution
         $reponseJson = file_get_contents('php://input');
+        
+        // LOG SIMPLES - Salvar tudo que vem da Evolution
+        $logFile = storage_path('logs/evolution_recebido.log');
+        $timestamp = date('Y-m-d H:i:s');
+        $logContent = "[$timestamp] DADOS RECEBIDOS DA EVOLUTION:\n";
+        $logContent .= $reponseJson . "\n";
+        $logContent .= "==========================================\n\n";
+        
+        file_put_contents($logFile, $logContent, FILE_APPEND | LOCK_EX);
         
         if (empty($reponseJson)) {
             return response()->json(['status' => 'No data received']);
@@ -300,9 +307,6 @@ class EventsController extends Controller
         if (!$session) {
             return response()->json(['status' => 'Session not found']);
         }
-        
-        // Log do evento para debug
-        error_log('Cron Event: ' . json_encode($reponseArray));
         
         // Processar o evento
         $this->verifyService($reponseArray, $session);
