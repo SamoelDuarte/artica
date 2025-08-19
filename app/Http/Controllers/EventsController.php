@@ -160,58 +160,34 @@ class EventsController extends Controller
                 switch ($response) {
                     case "1": // Geladeira
                         $service->flow_stage = "geladeira";
-                        $service->await_answer = "menu2";
+                        $service->await_answer = "aguarda_imagem";
                         $service->update();
-                        $text = "Você selecionou: Geladeira ❄️\n\nQual o problema com sua geladeira?";
-                        $options = [
-                            "Não está gelando",
-                            "Fazendo muito barulho",
-                            "Vazando água",
-                            "Não liga"
-                        ];
-                        $this->sendMessagewithOption($session->session, $jid, $text, $options);
+                        $text = "Você selecionou: Geladeira ❄️\n\nPara melhor atendimento, por favor envie uma foto do aparelho ou do problema. 📸\n\nApós enviar a foto, você verá as opções de problemas mais comuns.";
+                        $this->sendMessagem($session->session, $jid, $text);
                         break;
 
                     case "2": // Microondas
                         $service->flow_stage = "microondas";
-                        $service->await_answer = "menu2";
+                        $service->await_answer = "aguarda_imagem";
                         $service->update();
-                        $text = "Você selecionou: Microondas 📡\n\nQual o problema com seu microondas?";
-                        $options = [
-                            "Não aquece",
-                            "Prato não gira",
-                            "Fazendo faísca",
-                            "Não liga"
-                        ];
-                        $this->sendMessagewithOption($session->session, $jid, $text, $options);
+                        $text = "Você selecionou: Microondas 📡\n\nPara melhor atendimento, por favor envie uma foto do aparelho ou do problema. 📸\n\nApós enviar a foto, você verá as opções de problemas mais comuns.";
+                        $this->sendMessagem($session->session, $jid, $text);
                         break;
 
                     case "3": // Freezer
                         $service->flow_stage = "freezer";
-                        $service->await_answer = "menu2";
+                        $service->await_answer = "aguarda_imagem";
                         $service->update();
-                        $text = "Você selecionou: Freezer 🧊\n\nQual o problema com seu freezer?";
-                        $options = [
-                            "Não está congelando",
-                            "Fazendo muito gelo",
-                            "Fazendo barulho",
-                            "Não liga"
-                        ];
-                        $this->sendMessagewithOption($session->session, $jid, $text, $options);
+                        $text = "Você selecionou: Freezer 🧊\n\nPara melhor atendimento, por favor envie uma foto do aparelho ou do problema. 📸\n\nApós enviar a foto, você verá as opções de problemas mais comuns.";
+                        $this->sendMessagem($session->session, $jid, $text);
                         break;
 
                     case "4": // Máquina de Lavar
                         $service->flow_stage = "maquina_lavar";
-                        $service->await_answer = "menu2";
+                        $service->await_answer = "aguarda_imagem";
                         $service->update();
-                        $text = "Você selecionou: Máquina de Lavar 👕\n\nQual o problema com sua máquina?";
-                        $options = [
-                            "Não está lavando",
-                            "Não centrifuga",
-                            "Vazando água",
-                            "Não liga"
-                        ];
-                        $this->sendMessagewithOption($session->session, $jid, $text, $options);
+                        $text = "Você selecionou: Máquina de Lavar 👕\n\nPara melhor atendimento, por favor envie uma foto do aparelho ou do problema. 📸\n\nApós enviar a foto, você verá as opções de problemas mais comuns.";
+                        $this->sendMessagem($session->session, $jid, $text);
                         break;
 
                     default:
@@ -227,6 +203,79 @@ class EventsController extends Controller
                             $service->update();
                         }
                         break;
+                }
+                exit;
+            }
+
+            // Novo estado: aguarda imagem do aparelho
+            if ($service->await_answer == "aguarda_imagem") {
+                $messageType = $reponseArray['data']['message']['type'];
+                $messageText = $reponseArray['data']['message']['text'] ?? '';
+                
+                if ($messageType == "image" || strtoupper(trim($messageText)) == "PULAR") {
+                    // Imagem recebida ou usuário optou por pular
+                    if ($messageType == "image") {
+                        $text = "Imagem recebida! 📷 Obrigado!\n\n";
+                    } else {
+                        $text = "Ok, continuando sem a imagem.\n\n";
+                    }
+                    
+                    switch ($service->flow_stage) {
+                        case "geladeira":
+                            $text .= "Agora, qual o problema com sua geladeira?";
+                            $options = [
+                                "Não está gelando",
+                                "Fazendo muito barulho", 
+                                "Vazando água",
+                                "Não liga"
+                            ];
+                            break;
+
+                        case "microondas":
+                            $text .= "Agora, qual o problema com seu microondas?";
+                            $options = [
+                                "Não aquece",
+                                "Prato não gira",
+                                "Fazendo faísca", 
+                                "Não liga"
+                            ];
+                            break;
+
+                        case "freezer":
+                            $text .= "Agora, qual o problema com seu freezer?";
+                            $options = [
+                                "Não está congelando",
+                                "Fazendo muito gelo",
+                                "Fazendo barulho",
+                                "Não liga"
+                            ];
+                            break;
+
+                        case "maquina_lavar":
+                            $text .= "Agora, qual o problema com sua máquina?";
+                            $options = [
+                                "Não está lavando",
+                                "Não centrifuga", 
+                                "Vazando água",
+                                "Não liga"
+                            ];
+                            break;
+
+                        default:
+                            $text = "Erro interno. Redirecionando para atendimento humano.";
+                            $this->sendMessagem($session->session, $jid, $text);
+                            $service->await_answer = "await_human";
+                            $service->update();
+                            exit;
+                    }
+
+                    $this->sendMessagewithOption($session->session, $jid, $text, $options);
+                    $service->await_answer = "menu2";
+                    $service->update();
+                } else {
+                    // Não é imagem nem "PULAR", pedir novamente
+                    $text = "Por favor, envie uma foto do aparelho para continuar. 📸\n\nSe não conseguir enviar a foto, digite 'PULAR' para continuar sem a imagem.";
+                    $this->sendMessagem($session->session, $jid, $text);
                 }
                 exit;
             }
@@ -314,6 +363,32 @@ class EventsController extends Controller
         }
         
         // Adaptar os dados para o formato esperado pelo verifyService
+        $messageType = 'text'; // Padrão
+        $messageText = '';
+        
+        // Verificar tipo de mensagem da Evolution
+        if (isset($evolutionData['data']['messageType'])) {
+            switch ($evolutionData['data']['messageType']) {
+                case 'conversation':
+                    $messageType = 'text';
+                    $messageText = $evolutionData['data']['message']['conversation'] ?? '';
+                    break;
+                case 'imageMessage':
+                    $messageType = 'image';
+                    $messageText = $evolutionData['data']['message']['imageMessage']['caption'] ?? '';
+                    break;
+                case 'audioMessage':
+                    $messageType = 'audio';
+                    break;
+                case 'videoMessage':
+                    $messageType = 'video';
+                    break;
+                default:
+                    $messageType = $evolutionData['data']['messageType'];
+                    break;
+            }
+        }
+        
         $reponseArray = [
             'data' => [
                 'sessionId' => $evolutionData['instance'],
@@ -322,8 +397,8 @@ class EventsController extends Controller
                     'from' => $evolutionData['data']['key']['remoteJid'] ?? null,
                     'fromMe' => $evolutionData['data']['key']['fromMe'] ?? false,
                     'fromGroup' => false, // Assumindo que não é grupo por enquanto
-                    'type' => $evolutionData['data']['messageType'] ?? 'text',
-                    'text' => $evolutionData['data']['message']['conversation'] ?? '',
+                    'type' => $messageType,
+                    'text' => $messageText,
                     'to' => $evolutionData['sender'] ?? null
                 ]
             ]
