@@ -132,6 +132,12 @@ class EventsController extends Controller
                 $service->save();
             }
 
+            // Se existe um chat ativo com "eu_iniciei", não processar mensagens do cliente
+            if ($service->await_answer == "eu_iniciei") {
+                // Não fazer nada - atendimento foi iniciado pelo atendente
+                exit;
+            }
+
             // Verificar se é mensagem de áudio e direcionar para atendimento humano
             if ($reponseArray['data']['message']['type'] == "audio") {
                 $service->await_answer = "await_human";
