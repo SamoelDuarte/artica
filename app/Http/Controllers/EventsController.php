@@ -304,7 +304,6 @@ class EventsController extends Controller
                 
                 // Finalizar o atendimento automatizado - marcar chat como encerrado
                 $service->await_answer = "await_human";
-                $service->active = 0; // Encerrar o chat
                 $service->update();
                 exit;
             }
