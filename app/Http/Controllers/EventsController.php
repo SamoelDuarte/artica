@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Base62Helper;
+use App\Http\Controllers\Utils;
 use App\Models\Avaliacao;
 use App\Models\Chat;
 use App\Models\Colaborador;
@@ -296,19 +297,42 @@ class EventsController extends Controller
             return response()->json(['status' => 'No data received']);
         }
         
-        $reponseArray = json_decode($reponseJson, true);
+        $evolutionData = json_decode($reponseJson, true);
         
-        if (!isset($reponseArray['data']['sessionId'])) {
-            return response()->json(['status' => 'Invalid data format']);
+        // A Evolution envia uma estrutura diferente, vamos adaptar
+        if (!isset($evolutionData['instance'])) {
+            return response()->json(['status' => 'Invalid data format - no instance']);
         }
         
-        $session = Device::where('session', $reponseArray['data']['sessionId'])->first();
+        // Buscar sessão pelo instanceId
+        $session = Device::where('session', $evolutionData['instance'])->first();
         
         if (!$session) {
-            return response()->json(['status' => 'Session not found']);
+            // Log para debug
+            file_put_contents($logFile, "[$timestamp] SESSÃO NÃO ENCONTRADA: {$evolutionData['instance']}\n", FILE_APPEND | LOCK_EX);
+            return response()->json(['status' => 'Session not found', 'instance' => $evolutionData['instance']]);
         }
         
-        // Processar o evento
+        // Adaptar os dados para o formato esperado pelo verifyService
+        $reponseArray = [
+            'data' => [
+                'sessionId' => $evolutionData['instance'],
+                'event' => $evolutionData['event'] ?? 'MESSAGE',
+                'message' => [
+                    'from' => $evolutionData['data']['key']['remoteJid'] ?? null,
+                    'fromMe' => $evolutionData['data']['key']['fromMe'] ?? false,
+                    'fromGroup' => false, // Assumindo que não é grupo por enquanto
+                    'type' => $evolutionData['data']['messageType'] ?? 'text',
+                    'text' => $evolutionData['data']['message']['conversation'] ?? '',
+                    'to' => $evolutionData['sender'] ?? null
+                ]
+            ]
+        ];
+        
+        // Log da conversão
+        file_put_contents($logFile, "[$timestamp] DADOS CONVERTIDOS:\n" . json_encode($reponseArray, JSON_PRETTY_PRINT) . "\n==========================================\n\n", FILE_APPEND | LOCK_EX);
+        
+        // Processar o evento com os dados adaptados
         $this->verifyService($reponseArray, $session);
         
         return response()->json(['status' => 'Event processed successfully']);
