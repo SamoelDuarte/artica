@@ -135,6 +135,7 @@ class EventsController extends Controller
             // Verificar se é mensagem de áudio e direcionar para atendimento humano
             if ($reponseArray['data']['message']['type'] == "audio") {
                 $service->await_answer = "await_human";
+                $service->active = 0; // Encerrar o chat - áudio vai para humano
                 $service->update();
                 exit;
             }
@@ -200,6 +201,7 @@ class EventsController extends Controller
                             $text = "Por favor aguarde, em instantes você será atendido(a) por um técnico.";
                             $this->sendMessagem($session->session, $jid, $text);
                             $service->await_answer = "await_human";
+                            $service->active = 0; // Encerrar o chat - muitos erros
                             $service->update();
                         }
                         break;
@@ -265,6 +267,7 @@ class EventsController extends Controller
                             $text = "Erro interno. Redirecionando para atendimento humano.";
                             $this->sendMessagem($session->session, $jid, $text);
                             $service->await_answer = "await_human";
+                            $service->active = 0; // Encerrar o chat - erro interno
                             $service->update();
                             exit;
                     }
@@ -293,7 +296,9 @@ class EventsController extends Controller
                 
                 $this->sendMessagem($session->session, $jid, $text);
                 
+                // Finalizar o atendimento automatizado - marcar chat como encerrado
                 $service->await_answer = "await_human";
+                $service->active = 0; // Encerrar o chat
                 $service->update();
                 exit;
             }
