@@ -507,35 +507,34 @@ class EventsController extends Controller
             return json_encode(['status' => 'test_mode', 'message' => $texto]);
         }
 
-        $curl = curl_init();
+        // Limpar número
+        $numero = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($numero, '55')) {
+            $numero = substr($numero, 2);
+        }
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => env('APP_URL_ZAP') . '/' . $session . '/messages/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => '{
-                                        "number": "' . $phone . '",
-                                        "message": {
-                                            "text": "' . $texto . '"
-                                        },
-                                        "delay": 3
-                                    }',
-            CURLOPT_HTTPHEADER => array(
-                'secret: $2a$12$VruN7Mf0FsXW2mR8WV0gTO134CQ54AmeCR.ml3wgc9guPSyKtHMgC',
-                'Content-Type: application/json'
-            ),
-        ));
+        $client = new \GuzzleHttp\Client();
+        $url = "http://147.79.111.119:8080/message/sendText/{$session}";
 
-        $response = curl_exec($curl);
+        $headers = [
+            'Content-Type' => 'application/json',
+            'apikey' => env('TOKEN_EVOLUTION'),
+        ];
 
-        curl_close($curl);
+        $body = json_encode([
+            'number' => '55' . $numero,
+            'text' => $texto,
+        ]);
 
-        echo $response;
+        try {
+            $request = new \GuzzleHttp\Psr7\Request('POST', $url, $headers, $body);
+            $response = $client->sendAsync($request)->wait();
+            
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            error_log("Erro ao enviar mensagem: " . $e->getMessage());
+            return false;
+        }
     }
     public function sendMessagewithOption($session, $phone, $text, $options)
     {
@@ -549,38 +548,40 @@ class EventsController extends Controller
             return json_encode(['status' => 'test_mode', 'message' => $text, 'options' => $options]);
         }
 
-        $curl = curl_init();
+        // Limpar número
+        $numero = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($numero, '55')) {
+            $numero = substr($numero, 2);
+        }
 
-        $send = array(
-            "number" => $phone,
-            "message" => array(
-                "text" => $text,
-                "options" => $options,
-            ),
-            "delay" => 3
-        );
+        // Montar mensagem com opções numeradas
+        $mensagemCompleta = $text . "\n\n";
+        foreach ($options as $index => $option) {
+            $mensagemCompleta .= ($index + 1) . ". " . $option . "\n";
+        }
 
+        $client = new \GuzzleHttp\Client();
+        $url = "http://147.79.111.119:8080/message/sendText/{$session}";
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => env('APP_URL_ZAP') . '/' . $session . '/messages/send',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($send),
-            CURLOPT_HTTPHEADER => array(
-                'secret: $2a$12$VruN7Mf0FsXW2mR8WV0gTO134CQ54AmeCR.ml3wgc9guPSyKtHMgC',
-                'Content-Type: application/json'
-            ),
-        ));
+        $headers = [
+            'Content-Type' => 'application/json',
+            'apikey' => env('TOKEN_EVOLUTION'),
+        ];
 
-        $response = curl_exec($curl);
+        $body = json_encode([
+            'number' => '55' . $numero,
+            'text' => $mensagemCompleta,
+        ]);
 
-        curl_close($curl);
-        echo $response;
+        try {
+            $request = new \GuzzleHttp\Psr7\Request('POST', $url, $headers, $body);
+            $response = $client->sendAsync($request)->wait();
+            
+            return json_decode($response->getBody(), true);
+        } catch (\Exception $e) {
+            error_log("Erro ao enviar mensagem com opções: " . $e->getMessage());
+            return false;
+        }
     }
     public function sendAudio($session, $phone)
     {
