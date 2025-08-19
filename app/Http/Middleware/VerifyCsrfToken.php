@@ -15,7 +15,8 @@ class VerifyCsrfToken extends Middleware
         'git-webhook',
         '/git-webhook',
         'webhook',
-        'api/*',        // Ignorar CSRF para todas as rotas que começam com 'api/'
+        'api/*',  
+        'cron/*',      // Ignorar CSRF para todas as rotas que começam com 'api/'
         'mobile/login-mobile',     // Se suas rotas mobile estão em /mobile/ também pode adicionar aqui
     ];
 }
